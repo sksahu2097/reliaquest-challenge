@@ -92,8 +92,7 @@ public class EmployeeService {
 
     public String deleteEmployeeById(String id) {
         Employee employee = getById(id);
-        if (Objects.isNull(employee))
-            throw new RuntimeException("Please enter proper employee Id");
+        if (Objects.isNull(employee)) throw new RuntimeException("Please enter proper employee Id");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

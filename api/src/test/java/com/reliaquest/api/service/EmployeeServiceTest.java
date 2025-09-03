@@ -79,10 +79,10 @@ class EmployeeServiceTest {
         ResponseEntity<ApiResponse<List<Employee>>> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                isNull(),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<List<Employee>>>>any()))
+                        anyString(),
+                        eq(HttpMethod.GET),
+                        isNull(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<List<Employee>>>>any()))
                 .thenReturn(response);
 
         List<Employee> result = employeeService.getAllEmployees();
@@ -96,10 +96,10 @@ class EmployeeServiceTest {
         ResponseEntity<ApiResponse<List<Employee>>> response = new ResponseEntity<>(null, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                isNull(),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<List<Employee>>>>any()))
+                        anyString(),
+                        eq(HttpMethod.GET),
+                        isNull(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<List<Employee>>>>any()))
                 .thenReturn(response);
 
         List<Employee> result = employeeService.getAllEmployees();
@@ -129,10 +129,10 @@ class EmployeeServiceTest {
         ResponseEntity<ApiResponse<Employee>> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                contains("/1"),
-                eq(HttpMethod.GET),
-                isNull(),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
+                        contains("/1"),
+                        eq(HttpMethod.GET),
+                        isNull(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
                 .thenReturn(response);
 
         Employee result = employeeService.getById("1");
@@ -145,10 +145,10 @@ class EmployeeServiceTest {
         ResponseEntity<ApiResponse<Employee>> response = new ResponseEntity<>(null, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                contains("/1"),
-                eq(HttpMethod.GET),
-                isNull(),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
+                        contains("/1"),
+                        eq(HttpMethod.GET),
+                        isNull(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
                 .thenReturn(response);
 
         Employee result = employeeService.getById("1");
@@ -179,10 +179,10 @@ class EmployeeServiceTest {
         ResponseEntity<ApiResponse<Employee>> response = new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
 
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
+                        anyString(),
+                        eq(HttpMethod.POST),
+                        any(HttpEntity.class),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
                 .thenReturn(response);
 
         EmployeeInput input = new EmployeeInput();
@@ -199,10 +199,10 @@ class EmployeeServiceTest {
         ResponseEntity<ApiResponse<Employee>> response = new ResponseEntity<>(null, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.POST),
-                any(HttpEntity.class),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
+                        anyString(),
+                        eq(HttpMethod.POST),
+                        any(HttpEntity.class),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
                 .thenReturn(response);
 
         EmployeeInput input = new EmployeeInput();
@@ -213,16 +213,30 @@ class EmployeeServiceTest {
 
     @Test
     void testDeleteEmployeeById_success() {
+
+        Employee emp = createEmployee("1", "Alice", 5000);
+        ApiResponse<Employee> apiResponse1 = new ApiResponse<>();
+        apiResponse1.setData(emp);
+
+        ResponseEntity<ApiResponse<Employee>> response1 = new ResponseEntity<>(apiResponse1, HttpStatus.OK);
+
+        when(restTemplate.exchange(
+                        contains("/1"),
+                        eq(HttpMethod.GET),
+                        isNull(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
+                .thenReturn(response1);
+
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
         apiResponse.setData(true);
 
         ResponseEntity<ApiResponse<Boolean>> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                contains("/1"),
-                eq(HttpMethod.DELETE),
-                isNull(),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Boolean>>>any()))
+                        anyString(),
+                        eq(HttpMethod.DELETE),
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Boolean>>>any()))
                 .thenReturn(response);
 
         String result = employeeService.deleteEmployeeById("1");
@@ -237,10 +251,10 @@ class EmployeeServiceTest {
         ResponseEntity<ApiResponse<Boolean>> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                contains("/1"),
-                eq(HttpMethod.DELETE),
-                isNull(),
-                ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Boolean>>>any()))
+                        contains("/1"),
+                        eq(HttpMethod.DELETE),
+                        isNull(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Boolean>>>any()))
                 .thenReturn(response);
 
         assertThrows(RuntimeException.class, () -> employeeService.deleteEmployeeById("1"));
