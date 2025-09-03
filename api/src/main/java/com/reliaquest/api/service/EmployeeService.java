@@ -1,7 +1,6 @@
 package com.reliaquest.api.service;
 
 import com.reliaquest.api.model.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -10,13 +9,16 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
-@RequiredArgsConstructor
+@Service
 public class EmployeeService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private static final String BASE_URL = "http://localhost:8112/api/v1/employee";
+
+    public EmployeeService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public List<Employee> getAllEmployees() {
         ResponseEntity<ApiResponse<List<Employee>>> response =
