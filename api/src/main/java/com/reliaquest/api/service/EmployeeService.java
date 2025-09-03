@@ -1,13 +1,12 @@
 package com.reliaquest.api.service;
 
 import com.reliaquest.api.model.*;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,9 +20,11 @@ public class EmployeeService {
     }
 
     public List<Employee> getAllEmployees() {
-        ResponseEntity<ApiResponse<List<Employee>>> response =
-                restTemplate.exchange(BASE_URL, HttpMethod.GET, null,
-                        new org.springframework.core.ParameterizedTypeReference<ApiResponse<List<Employee>>>(){});
+        ResponseEntity<ApiResponse<List<Employee>>> response = restTemplate.exchange(
+                BASE_URL,
+                HttpMethod.GET,
+                null,
+                new org.springframework.core.ParameterizedTypeReference<ApiResponse<List<Employee>>>() {});
         return response.getBody().getData();
     }
 
@@ -34,9 +35,11 @@ public class EmployeeService {
     }
 
     public Employee getById(String id) {
-        ResponseEntity<ApiResponse<Employee>> response =
-                restTemplate.exchange(BASE_URL + "/" + id, HttpMethod.GET, null,
-                        new org.springframework.core.ParameterizedTypeReference<ApiResponse<Employee>>(){});
+        ResponseEntity<ApiResponse<Employee>> response = restTemplate.exchange(
+                BASE_URL + "/" + id,
+                HttpMethod.GET,
+                null,
+                new org.springframework.core.ParameterizedTypeReference<ApiResponse<Employee>>() {});
         return response.getBody().getData();
     }
 
@@ -61,16 +64,20 @@ public class EmployeeService {
 
         HttpEntity<EmployeeInput> request = new HttpEntity<>(input, headers);
 
-        ResponseEntity<ApiResponse<Employee>> response =
-                restTemplate.exchange(BASE_URL, HttpMethod.POST, request,
-                        new org.springframework.core.ParameterizedTypeReference<ApiResponse<Employee>>(){});
+        ResponseEntity<ApiResponse<Employee>> response = restTemplate.exchange(
+                BASE_URL,
+                HttpMethod.POST,
+                request,
+                new org.springframework.core.ParameterizedTypeReference<ApiResponse<Employee>>() {});
         return response.getBody().getData();
     }
 
     public String deleteEmployeeById(String id) {
-        ResponseEntity<ApiResponse<Boolean>> response =
-                restTemplate.exchange(BASE_URL + "/" + id, HttpMethod.DELETE, null,
-                        new org.springframework.core.ParameterizedTypeReference<ApiResponse<Boolean>>(){});
+        ResponseEntity<ApiResponse<Boolean>> response = restTemplate.exchange(
+                BASE_URL + "/" + id,
+                HttpMethod.DELETE,
+                null,
+                new org.springframework.core.ParameterizedTypeReference<ApiResponse<Boolean>>() {});
 
         if (Boolean.TRUE.equals(response.getBody().getData())) {
             return "Employee with id " + id + " deleted successfully";
