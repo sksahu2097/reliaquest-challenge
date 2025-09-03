@@ -1,7 +1,6 @@
 package com.reliaquest.api.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.reliaquest.api.model.ApiResponse;
@@ -10,10 +9,10 @@ import com.reliaquest.api.model.EmployeeInput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,8 +29,13 @@ class EmployeeServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
-    @InjectMocks
     private EmployeeService employeeService;
+
+    @BeforeEach
+    void setUp() {
+        String testBaseUrl = "http://localhost:8112/api/v1";
+        employeeService = new EmployeeService(restTemplate, testBaseUrl);
+    }
 
     @Test
     void testGetHighestSalary() {
@@ -209,15 +213,29 @@ class EmployeeServiceTest {
 
     @Test
     void testDeleteEmployeeById_success() {
+
+        Employee emp = createEmployee("1", "Alice", 5000);
+        ApiResponse<Employee> apiResponse1 = new ApiResponse<>();
+        apiResponse1.setData(emp);
+
+        ResponseEntity<ApiResponse<Employee>> response1 = new ResponseEntity<>(apiResponse1, HttpStatus.OK);
+
+        when(restTemplate.exchange(
+                        contains("/1"),
+                        eq(HttpMethod.GET),
+                        isNull(),
+                        ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Employee>>>any()))
+                .thenReturn(response1);
+
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
         apiResponse.setData(true);
 
         ResponseEntity<ApiResponse<Boolean>> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                        contains("/1"),
+                        anyString(),
                         eq(HttpMethod.DELETE),
-                        isNull(),
+                        ArgumentMatchers.any(),
                         ArgumentMatchers.<ParameterizedTypeReference<ApiResponse<Boolean>>>any()))
                 .thenReturn(response);
 

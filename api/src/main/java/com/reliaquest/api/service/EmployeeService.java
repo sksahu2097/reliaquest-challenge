@@ -4,28 +4,38 @@ import com.reliaquest.api.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Slf4j
 @Service
+@Slf4j
 public class EmployeeService {
 
     private final RestTemplate restTemplate;
-    private static final String BASE_URL = "http://server-service:8112/api/v1/employee";
 
-    public EmployeeService(RestTemplate restTemplate) {
+    private final String baseUrl;
+
+    public EmployeeService(RestTemplate restTemplate, @Value("${employee.service.base-url}") String baseUrl) {
         this.restTemplate = restTemplate;
+        this.baseUrl = baseUrl;
     }
 
     public List<Employee> getAllEmployees() {
+        log.info("Fetching all employees from {}", baseUrl);
         ResponseEntity<ApiResponse<List<Employee>>> response = restTemplate.exchange(
-                BASE_URL,
+                baseUrl,
                 HttpMethod.GET,
                 null,
                 new org.springframework.core.ParameterizedTypeReference<ApiResponse<List<Employee>>>() {});
-        return response.getBody().getData();
+        if (Objects.isNull(response.getBody())) {
+            log.info("No employees found");
+            return new ArrayList<>();
+        }
+        List<Employee> employeeList = response.getBody().getData();
+        log.debug("Received {} employees", employeeList.size());
+        return employeeList;
     }
 
     public List<Employee> searchByName(String nameFragment) {
@@ -36,10 +46,14 @@ public class EmployeeService {
 
     public Employee getById(String id) {
         ResponseEntity<ApiResponse<Employee>> response = restTemplate.exchange(
-                BASE_URL + "/" + id,
+                baseUrl + "/" + id,
                 HttpMethod.GET,
                 null,
                 new org.springframework.core.ParameterizedTypeReference<ApiResponse<Employee>>() {});
+        if (Objects.isNull(response.getBody())) {
+            log.warn("Employees not found by id = {}", id);
+            return null;
+        }
         return response.getBody().getData();
     }
 
@@ -65,18 +79,31 @@ public class EmployeeService {
         HttpEntity<EmployeeInput> request = new HttpEntity<>(input, headers);
 
         ResponseEntity<ApiResponse<Employee>> response = restTemplate.exchange(
-                BASE_URL,
+                baseUrl,
                 HttpMethod.POST,
                 request,
                 new org.springframework.core.ParameterizedTypeReference<ApiResponse<Employee>>() {});
+        if (Objects.isNull(response.getBody())) {
+            log.warn("Employees not created");
+            return null;
+        }
         return response.getBody().getData();
     }
 
     public String deleteEmployeeById(String id) {
+        Employee employee = getById(id);
+        if (Objects.isNull(employee)) throw new RuntimeException("Please enter proper employee Id");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, String> bodyMap = new HashMap<>();
+        bodyMap.put("name", employee.getEmployee_name());
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(bodyMap, headers);
         ResponseEntity<ApiResponse<Boolean>> response = restTemplate.exchange(
-                BASE_URL + "/" + id,
+                baseUrl,
                 HttpMethod.DELETE,
-                null,
+                request,
                 new org.springframework.core.ParameterizedTypeReference<ApiResponse<Boolean>>() {});
 
         if (Boolean.TRUE.equals(response.getBody().getData())) {
